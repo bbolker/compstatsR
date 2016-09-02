@@ -2,15 +2,25 @@
 
 A repository for comp-stats-in-R sessions, McMaster University
 
-Three or four sessions during the weekly stats seminar
+Three or four sessions during the weekly stats seminar. Target audience: Master's students in statistics
 
 ## Brain dump/topics
 
-- **session 1**: profiling; basic R performance optimization (vectorization; not growing objects; installing vectorized BLAS)
-- **session 2**: simple distribution and parallelization
-- **session 3**: intro to Rcpp
-- extra/other: tips for numerical minimization (`optim`, `nloptr` etc.); revision control/Github?
+- **session 1**: profiling; basic R performance optimization (vectorization; pre-allocation; improved BLAS)
+- **session 2**: basics of distributed/parallel computation (`parallel`, `foreach` packages)
+- **session 3**: intro to Rcpp (`Rcpp`: touch on `RcppEigen`, `RcppArmadillo`)
+- extra/other
+   - tips for numerical minimization (`optim`, `nloptr` etc.)
+   - revision control/Github?
+   - R packaging?
+- **session 4**: TBD. Work session?
 
-refs: Noam Ross blog posts; R Inferno; Visser et al
+## References
+
+
+- blog posts by Noam Ross and others
+- the *R Inferno*
+- Visser et al *PLoS Computational Biology* 2016
+- [BibTex file](compstatsR.bib)
 
 This material is licensed as CC-BY-SA (attribution, share-alike).
