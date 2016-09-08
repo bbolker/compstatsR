@@ -30,12 +30,15 @@ Basically follow @ross_faster_2013.
 
 ## low-hanging fruit
 
+- `for` vs `*apply` is largely semantic (Inferno)
 - vectorization
+    - random-number-averaging example
 - pre-allocation/not growing objects
 - compilation
 - faster BLAS, Microsoft/Revolution R
 - simpler data structures
 - better linear algebra
+- sparse matrices?
 
 ## better packages
 
