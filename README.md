@@ -6,15 +6,15 @@ Three or four sessions during the weekly stats seminar. Target audience: Master'
 
 ## Brain dump/topics
 
-- **session 1**: profiling; basic R performance optimization (vectorization; pre-allocation; R compilation; improved BLAS)
-- **session 2**: basics of distributed/parallel computation (`parallel`, `foreach` packages)
-- **session 3**: intro to Rcpp (`Rcpp`: touch on `RcppEigen`, `RcppArmadillo`)
+- **session 1** (18 Oct): profiling; basic R performance optimization (vectorization; pre-allocation; R compilation; improved BLAS)
+- **session 2** (1 Nov): basics of distributed/parallel computation (`parallel`, `foreach` packages)
+- **session 3** (8 Nov): intro to Rcpp (`Rcpp`: touch on `RcppEigen`, `RcppArmadillo`)
 - **extra/other**
    - tips for numerical minimization (`optim`, `nloptr` etc.)
    - revision control/Github?
    - R packaging?
    - tools for data processing (tidyverse, `data.table`, ...)
-- **session 4**: TBD. Work session?
+- **session 4** (15 Nov): TBD. Work/practice session?
 
 ## References
 

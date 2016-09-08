@@ -1,0 +1,46 @@
+---
+title: "compstatsR session 1"
+author: "Ben Bolker"
+date: "September 7, 2016"
+output: ioslides_presentation
+bibliography: compstatsR.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Plan
+
+Basically follow @ross_faster_2013.
+
+## is it necessary?
+
+## running somewhere else
+- math servers
+- advisor's desktop
+- SHARCnet
+- cloud services?
+
+## how long will it take? benchmarking and scaling
+- big-O/qualitative analysis
+- `rbenchmark`, `microbenchmark`
+    
+## profiling
+
+## low-hanging fruit
+
+- vectorization
+- pre-allocation/not growing objects
+- compilation
+- faster BLAS, Microsoft/Revolution R
+- simpler data structures
+- better linear algebra
+
+## better packages
+
+- Task Views
+- `sos::findFn()`
+- (`dplyr`, `data.table`)
+
+## References
