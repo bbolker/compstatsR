@@ -1,10 +1,32 @@
 ---
-title: "compstatsR session 1"
+title: "compstatsR session 1: profiling and low-hanging fruit"
 author: "Ben Bolker"
 date: "September 7, 2016"
-output: ioslides_presentation
 bibliography: compstatsR.bib
+output:
+   ioslides_presentation
 ---
+<style>
+.refs {
+   font-size: 12px;
+}
+h2 { 
+ color: #3399ff;		
+}
+h3 { 
+ color: #3399ff;		
+}
+.title-slide {
+   background-color: #55bbff;
+}
+</style>
+<!-- Limit image width and height -->
+<style type="text/css">
+img {     
+  max-height: 560px;     
+  max-width: 800px; 
+}
+</style>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
@@ -30,19 +52,29 @@ Basically follow @ross_faster_2013.
 
 ## low-hanging fruit
 
-- `for` vs `*apply` is largely semantic (Inferno)
-- vectorization
-    - random-number-averaging example
-- pre-allocation/not growing objects
+- many ideas from @burns_r_2012:
+    - `for` vs `*apply` is largely semantic
+    - vectorization
+         - random-number-averaging example
+    - pre-allocation/not growing objects
+
+## vectorization
+
+Suppose we want to compute the means of 1000 sets of 1000 standard Normal deviates ([vecrand.R](vecrand.R))
+
+![](pix/vecrand.png)
+
+## More
+
 - compilation
-- faster BLAS, Microsoft/Revolution R
+- faster BLAS [@eddelbuettel_gcbd_2013], Microsoft/Revolution R
 - simpler data structures
 - better linear algebra
-- sparse matrices?
+- use sparse matrices?
 
 ## better packages
 
-- Task Views
+- Task Views ([CRAN](https://cran.r-project.org/web/views/), [alternate view](http://www.maths.lancs.ac.uk/~rowlings/R/TaskViews/))
 - `sos::findFn()`
 - (`dplyr`, `data.table`)
 

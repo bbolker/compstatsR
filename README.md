@@ -11,9 +11,14 @@ Three or four sessions during the weekly stats seminar. Target audience: Master'
 - **session 3** (8 Nov): intro to Rcpp (`Rcpp`: touch on `RcppEigen`, `RcppArmadillo`)
 - **extra/other**
    - tips for numerical minimization (`optim`, `nloptr` etc.)
+   - tools for data processing (tidyverse, `data.table`, ...)
+   - batch processing
+       - organization (array vs long format)
+	   - checkpointing
+	   - graphical presentation of simulations
+- **probably not this time**
    - revision control/Github?
    - R packaging?
-   - tools for data processing (tidyverse, `data.table`, ...)
 - **session 4** (15 Nov): TBD. Work/practice session?
 
 ## References
