@@ -2,7 +2,10 @@
 
 A repository for comp-stats-in-R sessions, McMaster University
 
-Three or four sessions during the weekly stats seminar. Target audience: Master's students in statistics
+Three or four sessions during the weekly stats seminar (3:30-5 PM
+Tuesdays starting October 18 in
+[ABB 165](https://www.mcmaster.ca/uts/maps/anbsb1.html) ([Google maps](https://goo.gl/maps/2M78izxchZP2)). Target
+audience: Master's students in statistics
 
 ## Brain dump/topics
 
@@ -27,6 +30,7 @@ Three or four sessions during the weekly stats seminar. Target audience: Master'
 - blog posts by Noam Ross and others
 - the *R Inferno*
 - Visser et al *PLoS Computational Biology* 2016
+- [*Efficient R Programming*](https://csgillespie.github.io/efficientR/), Gillespie and Lovelace
 - [BibTex file](compstatsR.bib)
 
 This material is licensed as CC-BY-SA (attribution, share-alike).
