@@ -32,5 +32,6 @@ audience: Master's students in statistics
 - Visser et al *PLoS Computational Biology* 2016
 - [*Efficient R Programming*](https://csgillespie.github.io/efficientR/), Gillespie and Lovelace
 - [BibTex file](compstatsR.bib)
+- [blog post on installing stuff](http://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/)
 
 This material is licensed as CC-BY-SA (attribution, share-alike).
