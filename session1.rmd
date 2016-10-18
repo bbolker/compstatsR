@@ -21,36 +21,164 @@ h3 {
 }
 </style>
 <!-- Limit image width and height -->
-<style type="text/css">
+<!-- 
 img {     
   max-height: 560px;     
   max-width: 800px; 
 }
+-->
+<style type="text/css">
+img {     
+  max-height: 500px;     
+  max-width: 720px; 
+}
+</style>
+<!-- n.b. comment must go outside style tags -->
+<!-- https://css-tricks.com/snippets/css/simple-and-nice-blockquote-styling/ -->
+<!-- quotes were "\201C""\201D""\2018""\2019"; -->
+<style>
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201C""\201C""\201C";
+}
+blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+blockquote p {
+  display: inline;
+}
 </style>
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Plan
+## plan
 
-Basically follow @ross_faster_2013.
+This presentation will loosely follow @ross_faster_2013, a [blog post on speeding up R code](http://www.noamross.net/blog/2013/4/25/faster-talk.html)
+
+- why optimize?
+- alternative computing platforms
+- benchmarking and scaling
+- profiling
+- low-hanging fruit
+    - vectorization
+	- not growing objects
+	- compiling R code
+	- better linear algebra packages
+
+## not (or mostly not) covering
+
+- workflows and version control (see [Software Carpentry](http://software-carpentry.org/))
+- Unix shell
+(see [Software Carpentry](http://software-carpentry.org/), SHARCnet webinars)
+- data munging and management (see [Data Carpentry](http://www.datacarpentry.org))
+
+## prerequisites
+
+- basic knowledge of R  
+(know what a data frame and a `for` loop are)
+- intermediate comp stats knowledge  
+(e.g. Newton-Raphson, expectation-maximization)
 
 ## is it necessary?
 
-## running somewhere else
-- math servers
-- advisor's desktop
-- SHARCnet
-- cloud services?
+> premature optimization is the root of all evil (or at least most of it) in programming ([Donald Knuth](https://en.wikiquote.org/wiki/Donald_Knuth))
 
-## how long will it take? benchmarking and scaling
-- big-O/qualitative analysis
-- `rbenchmark`, `microbenchmark`
+- how long will it take?
+- how much do you really need to compute?
+    - how many bootstrap runs?
+	- how many MCMC samples?
+	- how many parameter values?
+	
+You should be able to justify these decisions in any case!
+
+## running somewhere else {.columns-2}
+
+- laptops are not made for serious computation
+- notes on desktop keyboards are annoying
+
+**instead:**
+
+- math servers
+- desktop machine, in background
+- SHARCnet
+- cloud services (e.g. Amazon web services)
+
+<p class="forceBreak"></p>
+
+![](pix/l-how-to-fry-an-egg-on-laptop.jpg)
+
+[source](http://www.zdnet.com/pictures/weird-tech-12-geeky-uses-for-technology/12/)
+
+## how long will it take? scaling
+
+qualitative analysis: scaling of run time/memory requirements with
+
+- dimension
+- number of observations
+- number of groups (for multilevel models)
+- number of parameters
+- ... etc.
+
+Use *small* runs (large enough for stability, e.g. >1 min)
+to estimate, scale up
+
+## how long will it take? benchmarking
+
+- test alternative versions of code to compare performance
+- useful for snippets that you're going to put into larger code
+- ([thousands of examples on StackOverflow](http://stackoverflow.com/search?q=%5Br%5D+benchmark))
+- R packages: `rbenchmark`, `microbenchmark`
+
+## benchmarking example
+
+```{r benchmark,cache=TRUE}
+library(rbenchmark)
+set.seed(101)
+n <- 10000; p <- 20
+X <- matrix(rnorm(n*p),ncol=p); y <- rnorm(n)
+dumb <- function() c(solve(t(X)%*%X)%*%t(X)%*%y)
+smart <- function() coef(lm.fit(X,y))
+all.equal(dumb(),unname(smart()))  ## check equivalence
+benchmark(dumb(),smart(),
+   columns = c("test", "replications", "elapsed", "relative", "user.self"))
+```
     
 ## profiling
 
-## low-hanging fruit
+- `Rprof` is the basic machine for profiling
+     - `Rprof()` in code outputs profiling information to file
+	 - `R CMD Rprof <filename>` analyzes profiling information
+- The [Writing R Extensions]() document has a [Tidying and profiling R code](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Tidying-and-profiling-R-code) section
+- the [profvis package](https://rstudio.github.io/profvis/) is a prettier wrapper
+
+## profiling: zero-inflated mixed model example
+
+```{r zipme,eval=FALSE}
+source("zipme.R")  ## get zipme function
+load("Owls.rda")   ## get Owls data
+library(profvis)
+library(lme4)
+profvis(z1 <- zipme(cformula=SiblingNegotiation~
+                (FoodTreatment+ArrivalTime)*SexParent+
+                offset(logBroodSize)+(1|Nest),
+            zformula=z ~ 1,
+            data=Owls,maxitr=20,tol=1e-6,
+            verbose=FALSE))
+```
+
+## profiling: HIV model example
+
+# low-hanging fruit
 
 - many ideas from @burns_r_2012:
     - `for` vs `*apply` is largely semantic
@@ -64,6 +192,7 @@ Suppose we want to compute the means of 1000 sets of 1000 standard Normal deviat
 
 ![](pix/vecrand.png)
 
+```
 ## More
 
 - compilation

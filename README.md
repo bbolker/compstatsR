@@ -11,7 +11,7 @@ audience: Master's students in statistics
 
 - **session 1** (18 Oct): Basic principles for writing better, faster R code. Low-hanging fruit: performance optimization through vectorization, pre-allocation, compilation, etc.. Profiling.
 - **session 2** (1 Nov): Basics of distributed and parallel computation (`parallel`, `foreach` packages)
-- **session 3** (8 Nov): intro to Rcpp (`Rcpp`: touch on `RcppEigen`, `RcppArmadillo`)
+- **session 3** (8 Nov): Interfacing R with higher-performance languages, specifically introduction to Rcpp (`Rcpp`: touch on `RcppEigen`, `RcppArmadillo`).
 - **extra/other**
    - tips for numerical minimization (`optim`, `nloptr` etc.)
    - tools for data processing (tidyverse, `data.table`, ...)
@@ -32,6 +32,5 @@ audience: Master's students in statistics
 - Visser et al *PLoS Computational Biology* 2016
 - [*Efficient R Programming*](https://csgillespie.github.io/efficientR/), Gillespie and Lovelace
 - [BibTex file](compstatsR.bib)
-- [blog post on installing stuff](http://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/)
 
 This material is licensed as CC-BY-SA (attribution, share-alike).
