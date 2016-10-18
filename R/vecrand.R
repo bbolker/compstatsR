@@ -81,18 +81,26 @@ if (do_it) {
 
 ##'
 
-res <- readRDS(dfile)
-res2 <- reshape2::melt(res)
-library(ggplot2); theme_set(theme_bw())
-ggplot(res2,aes(x=n1,y=value,col=factor(n2)))+
-    stat_summary(fun.data=mean_cl_normal,aes(shape=method))+
-    stat_summary(fun.y=mean,geom="line",aes(linetype=method))+
-    scale_x_log10(breaks=c(100,500,1000,5000))+
-    scale_y_log10(breaks=c(0.01,0.1,1,10))+
-    scale_colour_discrete(name="vector length")+
-    labs(x="# vectors",y="mean time (s)")
+    res <- readRDS(dfile)
+    res2 <- reshape2::melt(res)
+    library(ggplot2); theme_set(theme_bw())
+    library(viridis)
+    ggplot(res2,aes(x=n1,y=value,col=factor(n2)))+
+        stat_summary(fun.data=mean_cl_normal,aes(shape=method))+
+        stat_summary(fun.y=mean,geom="line",aes(linetype=method))+
+        scale_x_log10(breaks=c(100,500,1000,5000))+
+        scale_y_log10(breaks=c(0.01,0.1,1,10))+
+        scale_colour_brewer(palette="Dark2",name="vector length")+
+        labs(x="# vectors",y="mean time (s)")
 
-ggsave("../pix/vecrand.png",width=5,height=5)
+    ## ggplot(res2,aes(x=method,y=value,colour=factor(n1),size=factor(n2)))+
+    ## stat_summary(fun.y=mean,geom="line",aes(group=interaction(n1,n2)),
+    ## alpha=0.4)+
+    ## scale_y_log10()+
+    ## scale_colour_brewer(palette="Dark2",name="vector length")+
+    ## labs(x="method",y="mean time (s)")
+
+ggsave("../pix/vecrand.png",width=4,height=4)
 
 ## wireframe? viridis?
 

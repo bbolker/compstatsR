@@ -324,6 +324,7 @@ cmpfun <- compile(fn)
 <p class="forceBreak"></p>
 
 <p>
+- `d-r-users@mcmaster.ca`
 - [R mailing lists](https://www.r-project.org/mail.html)
 - [StackOverflow [r] tag](http://stackoverflow.com/questions/tagged/r?filter=all&sort=active)
 - don't cross-post
@@ -331,6 +332,14 @@ cmpfun <- compile(fn)
 
 > Getting flamed for asking dumb questions on a public mailing list is all part of growing up and being a man/woman. (Michael Watson, `fortunes` package)
 
+## additional topics
 
+- general-purpose nonlinear minimization
+     - derivative vs derivative-free
+	 - noisy surfaces
+	 - `optim`, `nloptr` package
+	 - [optimization task view](https://cran.r-project.org/web/views/Optimization.html); @nash_best_2014
+- memoization
+- code style [DRY; write functions (Inferno circle #5)]
 
 ## References
