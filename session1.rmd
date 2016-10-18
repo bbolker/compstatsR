@@ -276,6 +276,9 @@ benchmark(growing=f1(100,100),double_loop=f2(100,100),
 
 ![](pix/vecrand.png)
 
+## another example [@visser_speeding_2015]
+
+![](pix/visser1.png)
 
 ## over-vectorizing (Inferno, circle #4)
 
@@ -319,6 +322,7 @@ cmpfun <- compile(fn)
 - be polite, without groveling
 - be specific: say what's not working
 - say what you've tried/where you've looked
+- don't cross-post
 </p>
 
 <p class="forceBreak"></p>
@@ -327,7 +331,6 @@ cmpfun <- compile(fn)
 - `d-r-users@mcmaster.ca`
 - [R mailing lists](https://www.r-project.org/mail.html)
 - [StackOverflow [r] tag](http://stackoverflow.com/questions/tagged/r?filter=all&sort=active)
-- don't cross-post
 </p>
 
 > Getting flamed for asking dumb questions on a public mailing list is all part of growing up and being a man/woman. (Michael Watson, `fortunes` package)
@@ -342,4 +345,4 @@ cmpfun <- compile(fn)
 - memoization
 - code style [DRY; write functions (Inferno circle #5)]
 
-## References
+## References {.refs}
