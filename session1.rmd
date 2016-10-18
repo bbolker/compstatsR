@@ -57,8 +57,13 @@ blockquote p {
 }
 </style>
 
-```{r setup, include=FALSE}
+```{r setup, message=FALSE, echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+insert_fun <- function(name) {
+    read_chunk(lines = capture.output(dump(name, '')),
+               labels = paste(name, 'source', sep = '-'))
+}
 ```
 
 ## plan
@@ -92,6 +97,8 @@ This presentation will loosely follow @ross_faster_2013, a [blog post on speedin
 ## is it necessary?
 
 > premature optimization is the root of all evil (or at least most of it) in programming ([Donald Knuth](https://en.wikiquote.org/wiki/Donald_Knuth))
+
+> **Uwe's Maxim**: Computers are cheap, and thinking hurts. [@burns_r_2012]
 
 - how long will it take?
 - how much do you really need to compute?
@@ -137,6 +144,7 @@ to estimate, scale up
 - test alternative versions of code to compare performance
 - useful for snippets that you're going to put into larger code
 - ([thousands of examples on StackOverflow](http://stackoverflow.com/search?q=%5Br%5D+benchmark))
+- super-basic: built-in `system.time()`
 - R packages: `rbenchmark`, `microbenchmark`
 
 ## benchmarking example
@@ -146,11 +154,11 @@ library(rbenchmark)
 set.seed(101)
 n <- 10000; p <- 20
 X <- matrix(rnorm(n*p),ncol=p); y <- rnorm(n)
-dumb <- function() c(solve(t(X)%*%X)%*%t(X)%*%y)
+naive <- function() c(solve(t(X)%*%X)%*%t(X)%*%y)
 smart <- function() coef(lm.fit(X,y))
-all.equal(dumb(),unname(smart()))  ## check equivalence
-benchmark(dumb(),smart(),
-   columns = c("test", "replications", "elapsed", "relative", "user.self"))
+all.equal(naive(),unname(smart()))  ## check equivalence
+bcols <- c("test", "replications", "elapsed", "relative")
+benchmark(naive(),smart(), columns = bcols)
 ```
     
 ## profiling
@@ -159,13 +167,13 @@ benchmark(dumb(),smart(),
      - `Rprof()` in code outputs profiling information to file
 	 - `R CMD Rprof <filename>` analyzes profiling information
 - The [Writing R Extensions]() document has a [Tidying and profiling R code](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Tidying-and-profiling-R-code) section
-- the [profvis package](https://rstudio.github.io/profvis/) is a prettier wrapper
+- the [profvis package](https://rstudio.github.io/profvis/) provides a prettier wrapper
 
 ## profiling: zero-inflated mixed model example
 
 ```{r zipme,eval=FALSE}
-source("zipme.R")  ## get zipme function
-load("Owls.rda")   ## get Owls data
+source("R/zipme.R")  ## get zipme function
+load("data/Owls.rda")   ## get Owls data
 library(profvis)
 library(lme4)
 profvis(z1 <- zipme(cformula=SiblingNegotiation~
@@ -178,33 +186,151 @@ profvis(z1 <- zipme(cformula=SiblingNegotiation~
 
 ## profiling: HIV model example
 
+Go to [R/HIV_prof.R](R/HIV_prof.R) ...
+
 # low-hanging fruit
 
-- many ideas from @burns_r_2012:
-    - `for` vs `*apply` is largely semantic
-    - vectorization
-         - random-number-averaging example
-    - pre-allocation/not growing objects
+## low-hanging fruit
+
+- Common performance issues
+- Form good R coding habits
+- Many ideas from @burns_r_2012
+
+## growing objects (Inferno, circle #2)
+
+- building up objects bit by bit is *super*-expensive
+- if `i>length(y)`, setting `y[i]` will extend the vector
+- growing data frames is even worse
+- use `numeric(n)` to pre-allocate vectors
+- `data.frame(x=numeric(n),...)`
+- or: construct a list of data frames and `do.call(rbind,dfList)` (or `dplyr::bind_rows()`) to put them together
+
+## growing objects: benchmark
+
+```{r vecbench2,cache=TRUE,dependson="benchmark"}
+n <- 1e4
+y <- 1
+growing <- function() for (i in 1:n) y[i] <- i
+vec <- function() y <- 1:n
+benchmark(growing(),vec(),columns = bcols)
+```
+
+## vectorization (Inferno, circle #3)
+
+- Sequential operations in R are expensive
+- Every function call counts
+- Use *vectorized* operations whenever possible
+- `rowMeans()`, `colMeans()`
+- Also: linear algebra (matrix products, Kronecker products, ...)
+
+```{r vecbench,cache=TRUE,dependson="benchmark"}
+y <- numeric(n); x <- 1:n
+nonvec <- function() for (i in 1:n) y[i] <- 2*x[i]
+vec <- function() y <- 2*x
+benchmark(nonvec(),vec(),columns = bcols)
+```
 
 ## vectorization
 
-Suppose we want to compute the means of 1000 sets of 1000 standard Normal deviates ([vecrand.R](vecrand.R))
+Suppose we want to compute the means of `n1` sets of `n2` standard Normal deviates ([R/vecrand.R](R/vecrand.R)): `source("R/vecrand.R")`
+
+```{r loopmat,echo=FALSE}
+source("R/vecrand.R")
+```
+
+```{r insertf1,echo=FALSE}
+insert_fun("f1")
+insert_fun("f2")
+insert_fun("f3")
+insert_fun("f4")
+```
+```{r f1-source,eval=FALSE}
+##
+```
+
+## double loop, no growing
+
+```{r f2-source,eval=FALSE}
+##
+```
+
+## better versions
+
+```{r f3-source,eval=FALSE}
+##
+```
+
+```{r f4-source,eval=FALSE}
+##
+```
+
+## benchmark (100x100)
+
+```{r vecrand,cache=TRUE,dependson="benchmark"}
+benchmark(growing=f1(100,100),double_loop=f2(100,100),
+          single_loop=f3(100,100),matrix=f4(100,100),
+          replications=50,columns=bcols,order="elapsed")
+```
+
+## a small surprise
 
 ![](pix/vecrand.png)
 
-```
-## More
+
+## over-vectorizing (Inferno, circle #4)
+
+- sometimes you really can't vectorize
+- e.g. iterative computations
+- difference between `for` and `*apply` (and `purrr::map`) is semantic
+- use what you can understand!
+
+<p></p>
+
+> Everyone knows that debugging is twice as hard as writing a program in the first place. So if you're as clever as you can be when you write it, how will you ever debug it? [Brian Kernighan](https://en.wikiquote.org/wiki/Brian_Kernighan)
+
+## a few more tricks
 
 - compilation
-- faster BLAS [@eddelbuettel_gcbd_2013], Microsoft/Revolution R
-- simpler data structures
-- better linear algebra
-- use sparse matrices?
+```{r cmp,eval=FALSE}
+library(compiler)
+cmpfun <- compile(fn)
+```
+- use simpler data structures (`matrix` faster than `data.frame`)
 
-## better packages
+## faster machinery
+
+- faster linear algebra libraries [@eddelbuettel_gcbd_2013]
+- [Microsoft R](https://mran.revolutionanalytics.com/download/#download)
+
+## use better packages
 
 - Task Views ([CRAN](https://cran.r-project.org/web/views/), [alternate view](http://www.maths.lancs.ac.uk/~rowlings/R/TaskViews/))
-- `sos::findFn()`
-- (`dplyr`, `data.table`)
+- `sos::findFn()` (full-text search of CRAN)
+- the [tidyverse](https://cran.r-project.org/web/packages/tidyverse/index.html)
+     - mostly stylistic
+	 - pipe syntax `%>%`
+	 - faster operations on data
+
+## asking for help (Inferno #9){.columns-2}
+
+<p>
+- include a minimal [reproducible example](http://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example)
+- include appropriate context (goal, packages, versions, platform)
+- be polite, without groveling
+- be specific: say what's not working
+- say what you've tried/where you've looked
+</p>
+
+<p class="forceBreak"></p>
+
+<p>
+- [R mailing lists](https://www.r-project.org/mail.html)
+- [StackOverflow [r] tag](http://stackoverflow.com/questions/tagged/r?filter=all&sort=active)
+- don't cross-post
+</p>
+
+> Getting flamed for asking dumb questions on a public mailing list is all part of growing up and being a man/woman. (Michael Watson, `fortunes` package)
+
+
 
 ## References
