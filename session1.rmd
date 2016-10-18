@@ -198,11 +198,16 @@ Go to [R/HIV_prof.R](R/HIV_prof.R) ...
 
 # low-hanging fruit
 
-## low-hanging fruit
+## low-hanging fruit {.columns-2}
 
 - Common performance issues
 - Form good R coding habits
 - Many ideas from @burns_r_2012
+("If you are using R and you think you’re in hell, this is a map for you")
+
+<p class="forceBreak"></p>
+
+![](pix/R_inferno_cover.jpg)
 
 ## growing objects (Inferno, circle #2)
 
@@ -350,7 +355,7 @@ cmpfun <- compile(fn)
 	 - noisy surfaces
 	 - `optim`, `nloptr` package
 	 - [optimization task view](https://cran.r-project.org/web/views/Optimization.html); @nash_best_2014
-- memoization
-- code style [DRY; write functions (Inferno circle #5)]
+- memoi[sz]ation ([memoise package](https://CRAN.R-project.org/package=memoise))
+- code style [DRY; write functions (Inferno circle #5, @wilson_best_2014]
 
 ## References {.refs}
