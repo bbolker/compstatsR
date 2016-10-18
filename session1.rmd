@@ -1,7 +1,7 @@
 ---
 title: "compstatsR session 1: profiling and low-hanging fruit"
 author: "Ben Bolker"
-date: "September 7, 2016"
+date: "18 October 2016"
 bibliography: compstatsR.bib
 output:
    ioslides_presentation
@@ -168,6 +168,7 @@ benchmark(naive(),smart(), columns = bcols)
 	 - `R CMD Rprof <filename>` analyzes profiling information
 - The [Writing R Extensions]() document has a [Tidying and profiling R code](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Tidying-and-profiling-R-code) section
 - the [profvis package](https://rstudio.github.io/profvis/) provides a prettier wrapper
+- ... also [aprof package](https://CRAN.R-project.org/package=aprof) ...
 
 ## profiling: zero-inflated mixed model example
 
@@ -182,6 +183,13 @@ profvis(z1 <- zipme(cformula=SiblingNegotiation~
             zformula=z ~ 1,
             data=Owls,maxitr=20,tol=1e-6,
             verbose=FALSE))
+```
+
+```{r echo=FALSE,eval=FALSE}
+aprof("R/aprof_ex.R")
+tmp <- tempfile()
+## Create a aprof object
+fooaprof<-aprof("R/aprof_ex.R",tmp)
 ```
 
 ## profiling: HIV model example
