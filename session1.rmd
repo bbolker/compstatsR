@@ -312,6 +312,7 @@ library(compiler)
 cmpfun <- compile(fn)
 ```
 - use simpler data structures (`matrix` faster than `data.frame`)
+- use the guts of a function to skip data-checking steps: e.g. `lm` vs `lm.fit` vs `.lm.fit`
 
 ## faster machinery
 

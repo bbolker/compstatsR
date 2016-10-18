@@ -465,6 +465,7 @@ cmpfun &lt;- compile(fn)</pre>
 
 <ul>
 <li>use simpler data structures (<code>matrix</code> faster than <code>data.frame</code>)</li>
+<li>use the guts of a function to skip data-checking steps: e.g. <code>lm</code> vs <code>lm.fit</code> vs <code>.lm.fit</code></li>
 </ul>
 
 </article></slide><slide class=''><hgroup><h2>faster machinery</h2></hgroup><article  id="faster-machinery">
