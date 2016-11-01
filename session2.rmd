@@ -224,7 +224,8 @@ batch 4: as above, but use new code with equal gamma diversity (= 10 species)
 
 - `detectCores()`
 - `mclapply` (non-Windows only), `parLapply` (slightly more setup): 2 cores by default
-- only tricky parts: 
+- sometimes-tricky parts: dealing with random numbers (see `parallel` vignette) and (for complex problems) distributing necessary objects to all workers
+- very simple for simple problems
 
 ```{r parallel,results="hide"}
 library(parallel)
