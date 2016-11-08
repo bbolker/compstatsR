@@ -264,8 +264,8 @@ subtract(4,5)</pre>
 <li><code>for</code> loops
 
 <ul>
-<li><code>for (&lt;init&gt;; &lt;test&gt;; &lt;increment&gt;)</code>, e.g.</li>
-<li><code>for (i=0; i++; i&lt;N)</code></li>
+<li><code>for (&lt;init&gt;; &lt;increment&gt;; &lt;test&gt;) { ... }</code>, e.g.</li>
+<li><code>for (i=0; i++; i&lt;N) { ... }</code></li>
 </ul></li>
 <li>scalar types: <code>double</code>, <code>int</code>, <code>String</code>, <code>bool</code></li>
 <li>vector types: <code>NumericVector</code>, <code>IntegerVector</code>, <code>CharacterVector</code>, <code>LogicalVector</code><br/>(R <code>length()</code> == C++ <code>.size()</code>)</li>
@@ -302,7 +302,8 @@ using namespace Rcpp;
 <li>use either <code>Rprintf</code> (R-style) or <code>Rcout</code> (C++-style) printing:</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>cppFunction(&#39;void print_stuff1(double val) {
+<pre class = 'prettyprint lang-r'>library(Rcpp)
+cppFunction(&#39;void print_stuff1(double val) {
    Rprintf(&quot;hello world: %f\\n&quot;,val);
 }&#39;)
 print_stuff1(pi)</pre>

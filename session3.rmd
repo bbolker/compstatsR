@@ -158,8 +158,8 @@ all integer *scalars*)
 ## Summary
 
 - `for` loops
-    - `for (<init>; <test>; <increment>)`, e.g.
-    - `for (i=0; i++; i<N)`
+    - `for (<init>; <increment>; <test>) { ... } `, e.g.
+    - `for (i=0; i++; i<N) { ... }`
 - scalar types: `double`, `int`, `String`, `bool`
 - vector types: `NumericVector`, `IntegerVector`, `CharacterVector`, `LogicalVector`  
 (R `length()` == C++ `.size()`)
@@ -192,7 +192,8 @@ using namespace Rcpp;
 - essential for debugging!
 - use either `Rprintf` (R-style) or `Rcout` (C++-style) printing:
 
-```{r print}
+```{r print,cache=TRUE}
+library(Rcpp)
 cppFunction('void print_stuff1(double val) {
    Rprintf("hello world: %f\\n",val);
 }')
