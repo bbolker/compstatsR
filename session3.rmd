@@ -1,0 +1,275 @@
+---
+title: "compstatsR session 3:<br>C++ and Rcpp"
+author: "Ben Bolker"
+date: "08 November 2016"
+bibliography: compstatsR.bib
+output:
+   ioslides_presentation
+---
+<style>
+.refs {
+   font-size: 12px;
+}
+h2 { 
+ color: #3399ff;		
+}
+h3 { 
+ color: #3399ff;		
+}
+.title-slide {
+   background-color: #55bbff;
+}
+</style>
+<!-- Limit image width and height -->
+<!-- 
+img {     
+  max-height: 560px;     
+  max-width: 800px; 
+}
+-->
+<style type="text/css">
+img {     
+  max-height: 500px;     
+  max-width: 720px; 
+}
+</style>
+<!-- n.b. comment must go outside style tags -->
+<!-- https://css-tricks.com/snippets/css/simple-and-nice-blockquote-styling/ -->
+<!-- quotes were "\201C""\201D""\2018""\2019"; -->
+<style>
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201C""\201C""\201C";
+}
+blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+blockquote p {
+  display: inline;
+}
+</style>
+<style>
+div#before-column p.forceBreak {
+	break-before: column;
+}
+div#after-column p.forceBreak {
+	break-after: column;
+}
+</style>
+
+```{r setup, message=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+insert_fun <- function(name) {
+    read_chunk(lines = capture.output(dump(name, '')),
+               labels = paste(name, 'source', sep = '-'))
+}
+```
+# When to use C++ 
+
+## Don't (from [Rich Fitzjohn][1])
+
+- Slower development
+- Have to learn/remember two languages
+- Profiling is harder
+- Debugging is harder
+- Platform independence is harder
+- Distributing code is harder
+
+[1]: https://github.com/richfitz/rc2016/blob/master/slides.md "R & C / C++"
+
+## Instead
+
+- optimize and profile
+- use existing library code
+- check algorithms  
+(RF: "Using C will not magically make a bad algorithm faster")
+
+## Why *should* you?
+
+- Proven need for speed
+- Very large objects: avoid copying
+- Linking to external software libraries
+
+> Typical bottlenecks that C++ can address include:
+> 
+> - Loops that can’t be easily vectorised because subsequent iterations depend on previous ones.
+> - Recursive functions, or problems which involve calling functions millions of times. The overhead of calling a function in C++ is much lower than that in R.
+> - Problems that require advanced data structures and algorithms that R doesn’t provide ...
+
+# C++ super-basics
+
+## C++ vs. R
+
+C++ is:
+
+- older
+- [much more widely used][2]
+- lower-level ("close to the metal")
+- strongly object-oriented ...
+- superset of (simpler) C
+- compiled vs. interpreted
+
+[2]: http://spectrum.ieee.org/computing/software/the-2016-top-programming-languages "top programming languages"
+
+## C++ differences from R
+
+- syntax
+    - statements end with semicolons
+- zero-indexing
+- stronger/static typing
+    - variable declaration
+	- scalars and vectors are different
+
+
+## example (modified from HW) {.columns-2}
+
+```{r rcpp1,message=FALSE,cache=TRUE}
+library(Rcpp)
+cppFunction(
+ 'int subtract(int x, int y) {
+    int diff = x - y;
+    return diff;
+  }')
+subtract(4,5)
+subtract(y=4,x=5)
+```
+
+- all explicitly typed
+(return value, args, temp variable:
+all integer *scalars*)
+- explicit `return` statement
+- `cppFunction` magically finds function name
+- named arguments   
+(no default values)
+
+## Switch to *Advanced R* examples
+
+([here](http://adv-r.had.co.nz/Rcpp.html#rcpp-intro))
+
+## Summary
+
+- `for` loops
+    - `for (<init>; <test>; <increment>)`, e.g.
+    - `for (i=0; i++; i<N)`
+- scalar types: `double`, `int`, `String`, `bool`
+- vector types: `NumericVector`, `IntegerVector`, `CharacterVector`, `LogicalVector`  
+(R `length()` == C++ `.size()`)
+- matrix types: `NumericMatrix`, etc.  
+(index via `m(i,j)`; `.nrow()`, `.ncol()`)
+
+## Connecting C++ to R
+
+- via `cppFunction` (quick and dirty/magic)
+- via `sourceCpp` (better)
+- via an R package (best for long term)
+
+## using sourceCpp
+
+- C++ code in a separate file
+- enables syntax highlighting
+- need
+
+```
+#include <Rcpp.h>
+using namespace Rcpp;
+
+// [[Rcpp::export]]  // for each function
+```
+
+`sourceCpp("path/filename.cpp")`
+
+## Output from Rcpp
+
+- essential for debugging!
+- use either `Rprintf` (R-style) or `Rcout` (C++-style) printing:
+
+```{r print}
+cppFunction('void print_stuff1(double val) {
+   Rprintf("hello world: %f\\n",val);
+}')
+print_stuff1(pi)
+cppFunction('void print_stuff2(double val) {
+   Rcout << "hello world " << val << std::endl;
+}')
+print_stuff1(pi)
+print_stuff2(pi)
+```
+
+## Gibbs sampling example
+
+From [Darren Wilkinson's blog](https://darrenjw.wordpress.com/2011/07/16/gibbs-sampler-in-various-languages-revisited/):
+
+$$
+\begin{split}
+f(x,y) & = kx^2 \exp(-xy^2-y^2+2y-4x) \quad x >0, y \in {\mathbf R} \\
+x |y & \sim \textrm{Gamma}(3,y^2+4) \\
+y |x & \sim \textrm{Normal}\left(\frac{1}{1+x},\frac{1}{2(1+x)}\right)
+\end{split}
+$$
+
+([back to *Advanced R*](http://adv-r.had.co.nz/Rcpp.html#rcpp-case-studies))
+
+## Sugar
+
+- [syntactic sugar](https://en.wikipedia.org/wiki/Syntactic_sugar)
+
+>  If there’s a sugar version of the function you’re interested in, you should use it: it’ll be both expressive and well tested. Sugar functions aren’t always faster than a handwritten equivalent, but they will get faster in the future as more time is spent on optimising Rcpp. ([AdvR](http://adv-r.had.co.nz/Rcpp.html#rcpp-case-studies#sugar))
+
+- automatic vectorized arithmetic, logical comparisons, math functions, probability distributions ...
+
+## Sugar example
+
+```{r sugar,cache=TRUE}
+cppFunction(
+"NumericVector pdistC2(double x, NumericVector ys) {
+  return sqrt(pow((x - ys), 2));
+}
+")
+pdistC2(2,-2:4)
+```
+
+## libraries
+
+- `RcppEigen` (Eigen library)
+- `RcppArmadillo` ([Armadillo](http://arma.sourceforge.net/) library)
+
+Super-simple example. 
+
+```{r arma}
+library(RcppArmadillo)
+cppFunction(depends="RcppArmadillo",
+    "arma::mat matMult(arma::mat x, arma::mat y) {
+       return (x%y);
+}
+")
+matMult(matrix(1:4,2),matrix(1:4,2))
+```
+
+## More on Armadillo
+
+- automatic conversion from R matrix $\leftrightarrow$ `NumericMatrix` $\leftrightarrow$ `arma::mat` (elsewhere may need `as<arma::mat>` to convert)
+- `.fill` to initialize matrices
+
+## Resources
+
+- books [@eddelbuettel_seamless_2013;@wickham_advanced_2014]
+- [Rcpp on the author's web site](http://dirk.eddelbuettel.com/code/rcpp.html)
+- [quick reference guide](http://dirk.eddelbuettel.com/code/rcpp/Rcpp-quickref.pdf) (PDF)
+- [Rcpp gallery](http://gallery.rcpp.org/)
+   - [stochastic SIR model](http://gallery.rcpp.org/articles/epidemiological-compartment-model/)
+   - [EM algorithm for probit regression](http://gallery.rcpp.org/articles/EM-algorithm-example/) (with Armadillo)
+- [another basic intro to RcppArmadillo](http://q-aps.princeton.edu/sites/default/files/q-aps/files/slides_day4_am.pdf)
+
+<!-- http://stackoverflow.com/questions/10474107/fast-bounding-of-data-in-r/10475036#10475036 -->
+
+## References {.refs}
+
