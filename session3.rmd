@@ -258,6 +258,7 @@ matMult(matrix(1:4,2),matrix(1:4,2))
 
 - automatic conversion from R matrix $\leftrightarrow$ `NumericMatrix` $\leftrightarrow$ `arma::mat` (elsewhere may need `as<arma::mat>` to convert)
 - `.fill` to initialize matrices
+- syntax generally MATLAB-like (!!): [table](http://arma.sourceforge.net/docs.html#syntax)
 
 ## Resources
 
