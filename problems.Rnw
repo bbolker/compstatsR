@@ -1,0 +1,67 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{palatino}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{hyperref}
+\newcommand{\code}[1]{{\tt #1}}
+
+\begin{document}
+
+\title{Stats Seminar (STATS 770)\\ McMaster University\\ R programming assignment}
+\date{15 November 2016}
+
+\maketitle
+\begin{enumerate}
+\item Consider a random sample from a mixture distribution with probability density function
+$$f(y; \mu, \sigma) = \pi f_1(y; \mu, \sigma)+(1-\pi)f_2(y; \mu,\sigma), \quad y \in \mathbb{R}$$ 
+
+where $f_1(.)$ and $f_2(.)$ are the PDFs of the Normal distribution with ($\mu$=1.5,  $\sigma$=1) and ($\mu$=2,  $\sigma$=1.75) respectively.
+\[ \pi = \left\{ \begin{array}{ll}
+         1 & \mbox{with prob. $P(U\ge 0.5)$}\\
+         0 & \mbox{with prob. $P(U < 0.5)$}\end{array} \right. \] 
+where $U \sim$ Uniform (0,1).
+
+\begin{itemize}
+\item Create a numeric vector containing $10^4$ values of $f(y; \mu, \sigma)$.
+\item Calculate the mean and standard deviation of the sample using base R functions.
+\item Calculate the mean and standard deviation of the sample explicitly using a \code{for} loop to add each term (without using default R functions).
+\item Compare the computation time using {\tt system.time()} and report for both the cases above (i.e. with and without default R functions).
+\item Compare the computation time using a function from a benchmarking package (e.g. \code{microbenchmark::microbenchmark} or \code{rbenchmark::benchmark}) and report for both cases.
+\item Using \code{Rcpp::cppFunction}, compute the mean and standard deviation of the sample and report the computation time using a benchmark package. \emph{You may use either explicit \code{for} loops or \code{Rcpp} ``sugar'' functions} (e.g. see \href{http://stackoverflow.com/questions/28357607/list-of-rcpp-sugar-functions}{here} or particularly
+\href{https://github.com/RcppCore/Rcpp/blob/master/inst/include/Rcpp/sugar/functions/functions.h}{here}).
+\end{itemize}
+
+\item A standard test case for simple computational methods is to estimate the
+value of $\pi$ by the rejection method. In other words:
+\renewcommand{\labelitemi}{$-$}
+\begin{itemize}
+\item  Pick $N$ values uniformly in the unit square $[0,1] \times [0,1]$.
+\item Count the fraction that fall inside the unit circle (i.e. $x^2+y^2 < 1$)
+(in R you can conveniently do this via \verb|mean(x^2+y^2<1)|, because
+applying \code{mean()} 
+converts logical variables (\code{FALSE}/\code{TRUE}) to numeric (0/1)).
+\item This value should be the area of the quarter-circle divided by the area of
+the square, i.e. $(\pi r^2/4)/r^2 = \pi/4$; multiplying by 4 gives $\pi$.
+\end{itemize}
+
+\renewcommand{\labelitemi}{$\bullet$}
+\begin{itemize}
+\item Write an R function \verb|approx_pi| (with argument \code{N} specifying the number of samples) to compute this approximation. Try it out.
+\item Now write R code to do this in parallel across more than one core on
+your machine. 
+On Linux or MacOS \verb|library(parallel); mclapply(c(N/2,N/2),approx_pi)| should work.
+If you are on Windows you will have to do something like
+<<p,eval=FALSE>>=
+library(parallel)
+cl <- makeCluster(2)
+parLapply(cl,c(N/2,N/2),approx_pi)
+stopCluster(cl)
+@
+Use \code{system.time()} and/or a benchmarking package to compare the performance of the parallel and non-parallel codes.
+\end{itemize}
+
+\end{enumerate}
+
+
+\end{document}
