@@ -1,5 +1,4 @@
-do_it <- FALSE
-
+if (!exists("do_it")) do_it <- TRUE
 ##' 1. worst-case scenario
 f1 <- function(n1=1000,n2=1000) {
     res <- c()              ## define result structure
@@ -100,8 +99,8 @@ if (do_it) {
     ## scale_colour_brewer(palette="Dark2",name="vector length")+
     ## labs(x="method",y="mean time (s)")
 
-ggsave("../pix/vecrand.png",width=4,height=4)
+    ggsave("../pix/vecrand.png",width=6, height=4)
 
-## wireframe? viridis?
+    ## wireframe? viridis?
 
 }
