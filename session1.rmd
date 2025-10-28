@@ -85,7 +85,7 @@ This presentation will loosely follow @ross_faster_2013, a [blog post on speedin
 
 - workflows and version control (see [Software Carpentry](http://software-carpentry.org/))
 - Unix shell
-(see [Software Carpentry](http://software-carpentry.org/), SHARCnet webinars)
+(see [Software Carpentry](http://software-carpentry.org/), [SHARCnet](https://www.sharcnet.ca/my/front/) webinars)
 - data munging and management (see [Data Carpentry](http://www.datacarpentry.org))
 
 ## prerequisites
@@ -118,7 +118,7 @@ You should be able to justify these decisions in any case!
 
 - math servers
 - desktop machine, in background
-- SHARCnet
+- [SHARCnet](https://www.sharcnet.ca/my/front/)/[Compute Canada](https://docs.alliancecan.ca/wiki/Getting_started)
 - cloud services (e.g. Amazon web services)
 
 <p class="forceBreak"></p>
