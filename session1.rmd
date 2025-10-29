@@ -4,7 +4,8 @@ author: "Ben Bolker"
 date: "30 October 2025"
 bibliography: compstatsR.bib
 output:
-   ioslides_presentation
+  ioslides_presentation:
+    self-contained: true
 ---
 <style>
 .refs {
@@ -376,4 +377,12 @@ cmpfun <- compile(fn)
 - memoi[sz]ation ([memoise package](https://CRAN.R-project.org/package=memoise))
 - code style [DRY; write functions (Inferno circle #5, @wilson_best_2014]
 
+## this talk
+
+```{r echo = FALSE, fig.width = 6, fig.height = 6}
+library(qrcode)
+plot(qr_code("http://github.com/bbolker/compstatsR"))
+```
+
 ## References {.refs}
+
