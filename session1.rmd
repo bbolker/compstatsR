@@ -65,6 +65,14 @@ insert_fun <- function(name) {
     read_chunk(lines = capture.output(dump(name, '')),
                labels = paste(name, 'source', sep = '-'))
 }
+bm <- function(...) {
+  bench::mark(...) %>%
+    dplyr::select(expression, median, `itr/sec`, mem_alloc) %>%
+    mutate(rel_speed = max(`itr/sec`)/`itr/sec`, .after = `itr/sec`) %>%
+    mutate(rel_mem = as.numeric(mem_alloc/min(mem_alloc)),
+           .after = mem_alloc) %>%
+    arrange(rel_speed)
+}
 library(tidyverse)
 ```
 
@@ -117,7 +125,7 @@ You should be able to justify these decisions in any case!
 
 **instead:**
 
-- math servers
+- local servers (?)
 - desktop machine, in background
 - [SHARCnet](https://www.sharcnet.ca/my/front/)/[Compute Canada](https://docs.alliancecan.ca/wiki/Getting_started)
 - cloud services (e.g. Amazon web services)
@@ -141,6 +149,8 @@ qualitative analysis: scaling of run time/memory requirements with
 Use *small* runs (large enough for stability, e.g. >1 min)
 to estimate, scale up
 
+[big-${\cal O}$](https://en.wikipedia.org/wiki/Big_O_notation) estimates (e.g. ${\cal O}(n \log n)$) are useful but only describe *asymptotic* scaling
+
 ## how long will it take? benchmarking
 
 - test alternative versions of code to compare performance
@@ -151,10 +161,12 @@ to estimate, scale up
 
 ## benchmarking example
 
+(note: don't use textbook formulas like $\hat \beta = \left(X^\top X\right)^{-1} X^\top y$ in computation!)
+
 ```{r benchmark}
 set.seed(101)
 n <- 100000; p <- 10
-X <- matrix(rnorm(n*p),ncol=p); y <- rnorm(n)
+X <- matrix(rnorm(n*p), ncol=p); y <- rnorm(n)
 naive <- function() c(solve(t(X)%*%X)%*%t(X)%*%y)
 smart <- function() unname(coef(lm.fit(X,y)))
 all.equal(naive(), smart())  ## check equivalence
@@ -162,15 +174,8 @@ all.equal(naive(), smart())  ## check equivalence
 
 ## benchmarking results
 
-```{r}
-bm <- function(...) {
-  bench::mark(...) %>%
-    dplyr::select(expression, median, `itr/sec`, mem_alloc) %>%
-    mutate(rel_speed = min(`itr/sec`)/`itr/sec`, .after = `itr/sec`) %>%
-    mutate(rel_mem = as.numeric(mem_alloc/min(mem_alloc)),
-           .after = mem_alloc) %>%
-    arrange(rel_speed)
-}
+```{r bm2}
+bm(naive(), smart())
 ```
 
 ## profiling
@@ -243,10 +248,8 @@ bm(growing(),vec(), vec2())
 
 ## vectorization (Inferno, circle #3)
 
-- Sequential operations in R are expensive
-- Every function call counts
-- Use *vectorized* operations whenever possible
-- `rowMeans()`, `colMeans()`
+- Sequential operations expensive; every function call counts
+- Use *vectorized* operations if possible (e.g. `rowMeans()`, `colMeans()`)
 - Also: linear algebra (matrix products, Kronecker products, ...)
 
 ```{r vecbench}
@@ -335,21 +338,22 @@ cmpfun <- compile(fn)
 
 - faster linear algebra libraries [@eddelbuettel_gcbd_2013]
 - Rcpp, Julia, ...
+- the [fastverse](https://fastverse.github.io/fastverse/)
 
 ## use better packages
 
-- Task Views ([CRAN](https://cran.r-project.org/web/views/)
+- Task Views (on [CRAN](https://cran.r-project.org/web/views/))
 - `sos::findFn()` (full-text search of CRAN)
 - the [tidyverse](https://cran.r-project.org/web/packages/tidyverse/index.html)
      - mostly stylistic
-	 - pipe syntax `%>%`
+	 - pipe syntax `%>%`, `|>`
 	 - faster operations on data
 - `data.table`
 
 ## asking for help (Inferno #9){.columns-2}
 
 <p>
-- include a minimal [reproducible example](http://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example)
+- include a minimal [reproducible example](http://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example) (also see [here](https://carpentries-incubator.github.io/R-help-reprexes/instructor/1-intro-reproducible-examples.html))
 - include appropriate context (goal, packages, versions, platform)
 - be polite, without groveling
 - be specific: say what's not working
@@ -375,11 +379,15 @@ cmpfun <- compile(fn)
 	 - `optim`, `nloptr` package
 	 - [optimization task view](https://cran.r-project.org/web/views/Optimization.html); @nash_best_2014
 - memoi[sz]ation ([memoise package](https://CRAN.R-project.org/package=memoise))
-- code style [DRY; write functions (Inferno circle #5, @wilson_best_2014]
+- code style [DRY; write functions (Inferno circle #5, @wilson_best_2014; "code smells and feels" [@bryanCode2018]]
+
+## a final thought on R
+
+> The moral of the story is that if you want to create a beautiful language, for god’s sake don’t make it useful (@burnsInfernoish2012, "inferno-ish R")
 
 ## this talk
 
-```{r echo = FALSE, fig.width = 6, fig.height = 6}
+```{r qrcode, echo = FALSE, fig.width = 6, fig.height = 6}
 library(qrcode)
 plot(qr_code("http://github.com/bbolker/compstatsR"))
 ```

@@ -3306,7 +3306,7 @@ blockquote p {
 </blockquote>
 
 <blockquote>
-<p><strong>Uwe’s Maxim</strong>: Computers are cheap, and thinking hurts. <span class="cite">(Burns 2012)</span></p>
+<p><strong>Uwe’s Maxim</strong>: Computers are cheap, and thinking hurts. <span class="cite">(Burns 2012a)</span></p>
 </blockquote>
 
 <ul>
@@ -3332,7 +3332,7 @@ blockquote p {
 <p><strong>instead:</strong></p>
 
 <ul>
-<li>math servers</li>
+<li>local servers (?)</li>
 <li>desktop machine, in background</li>
 <li><a href='https://www.sharcnet.ca/my/front/' title=''>SHARCnet</a>/<a href='https://docs.alliancecan.ca/wiki/Getting_started' title=''>Compute Canada</a></li>
 <li>cloud services (e.g. Amazon web services)</li>
@@ -3360,6 +3360,8 @@ blockquote p {
 
 <p>Use <em>small</em> runs (large enough for stability, e.g. &gt;1 min) to estimate, scale up</p>
 
+<p><a href='https://en.wikipedia.org/wiki/Big_O_notation' title=''>big-\({\cal O}\)</a> estimates (e.g. \({\cal O}(n \log n)\)) are useful but only describe <em>asymptotic</em> scaling</p>
+
 </article></slide><slide class=""><hgroup><h2>how long will it take? benchmarking</h2></hgroup><article  id="how-long-will-it-take-benchmarking">
 
 <ul>
@@ -3372,9 +3374,11 @@ blockquote p {
 
 </article></slide><slide class=""><hgroup><h2>benchmarking example</h2></hgroup><article  id="benchmarking-example">
 
+<p>(note: don’t use textbook formulas like \(\hat \beta = \left(X^\top X\right)^{-1} X^\top y\) in computation!)</p>
+
 <pre class = 'prettyprint lang-r'>set.seed(101)
 n &lt;- 100000; p &lt;- 10
-X &lt;- matrix(rnorm(n*p),ncol=p); y &lt;- rnorm(n)
+X &lt;- matrix(rnorm(n*p), ncol=p); y &lt;- rnorm(n)
 naive &lt;- function() c(solve(t(X)%*%X)%*%t(X)%*%y)
 smart &lt;- function() unname(coef(lm.fit(X,y)))
 all.equal(naive(), smart())  ## check equivalence</pre>
@@ -3383,14 +3387,13 @@ all.equal(naive(), smart())  ## check equivalence</pre>
 
 </article></slide><slide class=""><hgroup><h2>benchmarking results</h2></hgroup><article  id="benchmarking-results">
 
-<pre class = 'prettyprint lang-r'>bm &lt;- function(...) {
-  bench::mark(...) %&gt;%
-    dplyr::select(expression, median, `itr/sec`, mem_alloc) %&gt;%
-    mutate(rel_speed = min(`itr/sec`)/`itr/sec`, .after = `itr/sec`) %&gt;%
-    mutate(rel_mem = as.numeric(mem_alloc/min(mem_alloc)),
-           .after = mem_alloc) %&gt;%
-    arrange(rel_speed)
-}</pre>
+<pre class = 'prettyprint lang-r'>bm(naive(), smart())</pre>
+
+<pre >## # A tibble: 2 × 6
+##   expression   median `itr/sec` rel_speed mem_alloc rel_mem
+##   &lt;bch:expr&gt; &lt;bch:tm&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;bch:byt&gt;   &lt;dbl&gt;
+## 1 smart()      11.4ms     100.       1       11.5MB    1   
+## 2 naive()      18.6ms      59.8      1.68    22.9MB    2.00</pre>
 
 </article></slide><slide class=""><hgroup><h2>profiling</h2></hgroup><article  id="profiling">
 
@@ -3430,7 +3433,7 @@ profvis(z1 &lt;- zipme(cformula=SiblingNegotiation~
 <ul>
 <li>Common performance issues</li>
 <li>Form good R coding habits</li>
-<li>Many ideas from <span class="cite">Burns (2012)</span> (&ldquo;If you are using R and you think you’re in hell, this is a map for you&rdquo;)</li>
+<li>Many ideas from <span class="cite">Burns (2012a)</span> (&ldquo;If you are using R and you think you’re in hell, this is a map for you&rdquo;)</li>
 </ul>
 
 <p class="forceBreak">
@@ -3462,17 +3465,15 @@ bm(growing(),vec(), vec2())</pre>
 <pre >## # A tibble: 3 × 6
 ##   expression   median `itr/sec` rel_speed mem_alloc rel_mem
 ##   &lt;bch:expr&gt; &lt;bch:tm&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;bch:byt&gt;   &lt;dbl&gt;
-## 1 vec()      420.03ns  1527529.  0.000320        NA      NA
-## 2 vec2()      40.85µs    30951.  0.0158          NA      NA
-## 3 growing()    1.94ms      489.  1               NA      NA</pre>
+## 1 vec()      401.05ns  1830916.       1          0B     NaN
+## 2 vec2()       7.07µs    54557.      33.6   78.17KB     Inf
+## 3 growing()    1.83ms      533.    3437.     1.68MB     Inf</pre>
 
 </article></slide><slide class=""><hgroup><h2>vectorization (Inferno, circle #3)</h2></hgroup><article  id="vectorization-inferno-circle-3">
 
 <ul>
-<li>Sequential operations in R are expensive</li>
-<li>Every function call counts</li>
-<li>Use <em>vectorized</em> operations whenever possible</li>
-<li><code>rowMeans()</code>, <code>colMeans()</code></li>
+<li>Sequential operations expensive; every function call counts</li>
+<li>Use <em>vectorized</em> operations if possible (e.g. <code>rowMeans()</code>, <code>colMeans()</code>)</li>
 <li>Also: linear algebra (matrix products, Kronecker products, …)</li>
 </ul>
 
@@ -3484,8 +3485,8 @@ bm(nonvec(),vec())</pre>
 <pre >## # A tibble: 2 × 6
 ##   expression   median `itr/sec` rel_speed mem_alloc rel_mem
 ##   &lt;bch:expr&gt; &lt;bch:tm&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;bch:byt&gt;   &lt;dbl&gt;
-## 1 vec()       13.99µs    68950.   0.00947        NA      NA
-## 2 nonvec()     1.53ms      653.   1              NA      NA</pre>
+## 1 vec()        10.3µs    91139.        1    117.3KB    1.19
+## 2 nonvec()     1.19ms      841.      108.    98.4KB    1</pre>
 
 </article></slide><slide class=""><hgroup><h2>vectorization</h2></hgroup><article  id="vectorization">
 
@@ -3552,10 +3553,10 @@ function (n1 = 1000, n2 = 1000)
 <pre >## # A tibble: 4 × 6
 ##   expression    median `itr/sec` rel_speed mem_alloc rel_mem
 ##   &lt;bch:expr&gt;  &lt;bch:tm&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;bch:byt&gt;   &lt;dbl&gt;
-## 1 matrix      455.32µs    1939.     0.0389        NA      NA
-## 2 single_loop 875.38µs    1040.     0.0724        NA      NA
-## 3 double_loop   9.94ms      99.0    0.761         NA      NA
-## 4 growing      13.22ms      75.4    1             NA      NA</pre>
+## 1 matrix       370.9µs    2398.       1     157.17KB    1.47
+## 2 single_loop 750.12µs    1295.       1.85  106.88KB    1   
+## 3 double_loop   8.31ms     120.      20.0   121.55KB    1.14
+## 4 growing      11.43ms      87.1     27.5     4.21MB   40.4</pre>
 
 </article></slide><slide class=""><hgroup><h2>a small surprise</h2></hgroup><article  id="a-small-surprise">
 
@@ -3601,18 +3602,19 @@ cmpfun &lt;- compile(fn)</pre>
 <ul>
 <li>faster linear algebra libraries <span class="cite">(Eddelbuettel 2013)</span></li>
 <li>Rcpp, Julia, …</li>
+<li>the <a href='https://fastverse.github.io/fastverse/' title=''>fastverse</a></li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>use better packages</h2></hgroup><article  id="use-better-packages">
 
 <ul>
-<li>Task Views (<a href='https://cran.r-project.org/web/views/' title=''>CRAN</a></li>
+<li>Task Views (on <a href='https://cran.r-project.org/web/views/' title=''>CRAN</a>)</li>
 <li><code>sos::findFn()</code> (full-text search of CRAN)</li>
 <li>the <a href='https://cran.r-project.org/web/packages/tidyverse/index.html' title=''>tidyverse</a>
 
 <ul>
 <li>mostly stylistic</li>
-<li>pipe syntax <code>%&gt;%</code></li>
+<li>pipe syntax <code>%&gt;%</code>, <code>|&gt;</code></li>
 <li>faster operations on data</li>
 </ul></li>
 <li><code>data.table</code></li>
@@ -3623,7 +3625,7 @@ cmpfun &lt;- compile(fn)</pre>
 <p>
 
 <ul>
-<li>include a minimal <a href='http://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example' title=''>reproducible example</a></li>
+<li>include a minimal <a href='http://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example' title=''>reproducible example</a> (also see <a href='https://carpentries-incubator.github.io/R-help-reprexes/instructor/1-intro-reproducible-examples.html' title=''>here</a>)</li>
 <li>include appropriate context (goal, packages, versions, platform)</li>
 <li>be polite, without groveling</li>
 <li>be specific: say what’s not working</li>
@@ -3663,16 +3665,39 @@ cmpfun &lt;- compile(fn)</pre>
 <li><a href='https://cran.r-project.org/web/views/Optimization.html' title=''>optimization task view</a>; <span class="cite">Nash (2014)</span></li>
 </ul></li>
 <li>memoi[sz]ation (<a href='https://CRAN.R-project.org/package=memoise' title=''>memoise package</a>)</li>
-<li>code style [DRY; write functions (Inferno circle #5, <span class="cite">Wilson et al. (2014)</span>]</li>
+<li>code style [DRY; write functions (Inferno circle #5, <span class="cite">Wilson et al. (2014)</span>; &ldquo;code smells and feels&rdquo; <span class="cite">(Bryan 2018)</span>]</li>
 </ul>
+
+</article></slide><slide class=""><hgroup><h2>a final thought on R</h2></hgroup><article  id="a-final-thought-on-r">
+
+<blockquote>
+<p>The moral of the story is that if you want to create a beautiful language, for god’s sake don’t make it useful (<span class="cite">Burns (2012b)</span>, &ldquo;inferno-ish R&rdquo;)</p>
+</blockquote>
+
+</article></slide><slide class=""><hgroup><h2>this talk</h2></hgroup><article  id="this-talk">
+
+<p><img src="data:image/png;base64,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" width="576" /></p>
 
 </article></slide><slide class=""><hgroup><h2>References</h2></hgroup><article  id="references" class="unnumbered refs">
 
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-bryanCode2018" class="csl-entry">
+<p>Bryan, Jenny. 2018. <span>
+“Code Smells and Feels.”</span> <em>Speaker Deck</em>. <a href='https://speakerdeck.com/jennybc/code-smells-and-feels' title=''>https://speakerdeck.com/jennybc/code-smells-and-feels</a>.</p></div>
+
 <div id="ref-burns_r_2012" class="csl-entry">
-<p>Burns, Patrick. 2012. <em>The <span>
+<p>Burns, Patrick. 2012a. <em>The <span>
 R</span> <span>
 Inferno</span></em>. Lulu.com. <a href='http://www.burns-stat.com/pages/Tutor/R_inferno.pdf' title=''>http://www.burns-stat.com/pages/Tutor/R_inferno.pdf</a>.</p></div>
+
+<div id="ref-burnsInfernoish2012" class="csl-entry">
+<p>———. 2012b. <span>
+“Inferno-Ish <span>
+R</span>: Or, <span>
+How I Learned</span> to <span>
+Stop Worrying</span> and <span>
+Love</span> the <span>
+Bomb</span>.”</span> <a href='https://www.burns-stat.com/documents/presentations/inferno-ish-R/' title=''>https://www.burns-stat.com/documents/presentations/inferno-ish-R/</a>.</p></div>
 
 <div id="ref-eddelbuettel_gcbd_2013" class="csl-entry">
 <p>Eddelbuettel, Dirk. 2013. <em>Gcbd: GPU/CPU Benchmarking in Debian-Based Systems</em>. <a href='https://CRAN.R-project.org/package=gcbd' title=''>https://CRAN.R-project.org/package=gcbd</a>.</p></div>
