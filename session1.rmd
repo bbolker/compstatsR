@@ -213,7 +213,9 @@ Go to [R/HIV_prof.R](R/HIV_prof.R) ...
 - Common performance issues
 - Form good R coding habits
 - Many ideas from @burns_r_2012
-("If you are using R and you think you’re in hell, this is a map for you")
+
+
+> If you are using R and you think you’re in hell, this is a map for you
 
 <p class="forceBreak"></p>
 
