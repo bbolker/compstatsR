@@ -97,13 +97,6 @@ This presentation will loosely follow @ross_faster_2013, a [blog post on speedin
 (see [Software Carpentry](http://software-carpentry.org/), [SHARCnet](https://www.sharcnet.ca/my/front/) webinars)
 - data munging and management (see [Data Carpentry](http://www.datacarpentry.org))
 
-## prerequisites
-
-- basic knowledge of R  
-(know what a data frame and a `for` loop are)
-- intermediate comp stats knowledge  
-(e.g. Newton-Raphson, expectation-maximization)
-
 ## is it necessary?
 
 > premature optimization is the root of all evil (or at least most of it) in programming ([Donald Knuth](https://en.wikiquote.org/wiki/Donald_Knuth))

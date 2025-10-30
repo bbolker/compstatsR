@@ -3292,13 +3292,6 @@ blockquote p {
 <li>data munging and management (see <a href='http://www.datacarpentry.org' title=''>Data Carpentry</a>)</li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>prerequisites</h2></hgroup><article  id="prerequisites">
-
-<ul>
-<li>basic knowledge of R<br/>(know what a data frame and a <code>for</code> loop are)</li>
-<li>intermediate comp stats knowledge<br/>(e.g. Newton-Raphson, expectation-maximization)</li>
-</ul>
-
 </article></slide><slide class=""><hgroup><h2>is it necessary?</h2></hgroup><article  id="is-it-necessary">
 
 <blockquote>
@@ -3393,7 +3386,7 @@ all.equal(naive(), smart())  ## check equivalence</pre>
 ##   expression   median `itr/sec` rel_speed mem_alloc rel_mem
 ##   &lt;bch:expr&gt; &lt;bch:tm&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;bch:byt&gt;   &lt;dbl&gt;
 ## 1 smart()      11.4ms     100.       1       11.5MB    1   
-## 2 naive()      18.6ms      59.8      1.68    22.9MB    2.00</pre>
+## 2 naive()      18.8ms      58.0      1.73    22.9MB    2.00</pre>
 
 </article></slide><slide class=""><hgroup><h2>profiling</h2></hgroup><article  id="profiling">
 
@@ -3465,9 +3458,9 @@ bm(growing(),vec(), vec2())</pre>
 <pre >## # A tibble: 3 × 6
 ##   expression   median `itr/sec` rel_speed mem_alloc rel_mem
 ##   &lt;bch:expr&gt; &lt;bch:tm&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;bch:byt&gt;   &lt;dbl&gt;
-## 1 vec()      401.05ns  1830916.       1          0B     NaN
-## 2 vec2()       7.07µs    54557.      33.6   78.17KB     Inf
-## 3 growing()    1.83ms      533.    3437.     1.68MB     Inf</pre>
+## 1 vec()      381.03ns  1872760.       1          0B     NaN
+## 2 vec2()       6.81µs    84966.      22.0   78.17KB     Inf
+## 3 growing()    1.81ms      539.    3477.     1.68MB     Inf</pre>
 
 </article></slide><slide class=""><hgroup><h2>vectorization (Inferno, circle #3)</h2></hgroup><article  id="vectorization-inferno-circle-3">
 
@@ -3485,8 +3478,8 @@ bm(nonvec(),vec())</pre>
 <pre >## # A tibble: 2 × 6
 ##   expression   median `itr/sec` rel_speed mem_alloc rel_mem
 ##   &lt;bch:expr&gt; &lt;bch:tm&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;bch:byt&gt;   &lt;dbl&gt;
-## 1 vec()        10.3µs    91139.        1    117.3KB    1.19
-## 2 nonvec()     1.19ms      841.      108.    98.4KB    1</pre>
+## 1 vec()       10.42µs    92682.        1    117.3KB    1.19
+## 2 nonvec()     1.17ms      852.      109.    98.4KB    1</pre>
 
 </article></slide><slide class=""><hgroup><h2>vectorization</h2></hgroup><article  id="vectorization">
 
@@ -3553,10 +3546,10 @@ function (n1 = 1000, n2 = 1000)
 <pre >## # A tibble: 4 × 6
 ##   expression    median `itr/sec` rel_speed mem_alloc rel_mem
 ##   &lt;bch:expr&gt;  &lt;bch:tm&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;bch:byt&gt;   &lt;dbl&gt;
-## 1 matrix       370.9µs    2398.       1     157.17KB    1.47
-## 2 single_loop 750.12µs    1295.       1.85  106.88KB    1   
-## 3 double_loop   8.31ms     120.      20.0   121.55KB    1.14
-## 4 growing      11.43ms      87.1     27.5     4.21MB   40.4</pre>
+## 1 matrix       371.8µs    2381.       1     157.17KB    1.47
+## 2 single_loop    755µs    1321.       1.80  106.88KB    1   
+## 3 double_loop    8.4ms     119.      20.1   121.55KB    1.14
+## 4 growing       11.4ms      87.9     27.1     4.21MB   40.4</pre>
 
 </article></slide><slide class=""><hgroup><h2>a small surprise</h2></hgroup><article  id="a-small-surprise">
 
