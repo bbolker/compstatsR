@@ -1,8 +1,12 @@
+default: docs/session3.html
+
 docs/session1.html: session1.html
 	mv session1.html docs
 
 session1.html: session1.rmd pix/vecrand.png
 
+docs/%.html: %.html
+	mv $< docs
 
 %.html: %.rmd
 	echo "rmarkdown::render(\"$<\")" | R --slave

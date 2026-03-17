@@ -1,7 +1,7 @@
 ---
-title: "compstatsR session 2: simulation workflows and distributed computing"
+title: "compstatsR:<br>simulation workflows and distributed computing"
 author: "Ben Bolker"
-date: "18 October 2016"
+date: "19 March 2026"
 bibliography: compstatsR.bib
 output:
    ioslides_presentation
@@ -159,10 +159,13 @@ pick typical values and vary *one parameter at a time* over sensible ranges
 
 ## Latin hypercube
 
+- sample combinations of parameters without replacement
 - handy alternative to factorial design
-- doesn't scale with problem dimension
-- (use quantiles of marginal distribution)
+- use quantiles of marginal distribution
 - summarize output: marginal summaries, partial rank correlations
+
+## 
+
 ```{r lhs}
 dd <- data.frame(v1=1:100,v2=1:100)
 dd[] <- lapply(dd,sample)
@@ -302,16 +305,25 @@ done
 - read in all files in directory (e.g. `list.files()`)
 - `abind` or `do.call(rbind,...)` them together
 
-## SHARCnet basics
+## SHARCnet/Compute Canada basics
 
-- ask your advisor for access, register with Compute Canada
+- [register with Compute Canada](https://www.alliancecan.ca/en/our-services/advanced-research-computing/account-management/apply-account) (ask your advisor for their CC id)
 - logging in: `ssh`
 - copying files: `scp`, `rsync`
 - submitting jobs: `sqsub`
 - checking jobs: `sqjobs`
 - special stuff for R
+    - see [notes](https://hackmd.io/@bbolker/r_hpc)
     - install packages interactively, from head node
-	- need to pick non-HTTPS mirror
-	- need `module unload intel; module load r/3.2.3` in scripts
+	- need `module load r/<VERSION>` in scripts
+
+## Source
+
+https://bbolker.github.io/compstatsR
+
+```{r qrcode, echo = FALSE, out.width = "90%"}
+library("qrcode")
+plot(qr_code("https://github.com/bbolker/compstatsR"))
+```
 
 ## References {.refs}

@@ -1,12 +1,12 @@
 # compstatsR
 
-A repository for comp-stats-in-R sessions, McMaster University
+A [repository](https://github.com/bbolker/compstatsR) for comp-stats-in-R sessions, McMaster University
 
 ## Topics
 
 - **session 1**: Basic principles for writing better, faster R code. Low-hanging fruit: performance optimization through vectorization, pre-allocation, compilation, etc.. Profiling. [HTML](session1.html)
-- **session 2**: Basics of distributed and parallel computation (`parallel`, `foreach` packages)
-- **session 3**: Interfacing R with higher-performance languages, specifically introduction to Rcpp (`Rcpp`: touch on `RcppEigen`, `RcppArmadillo`).
+- **session 2**: Basics of distributed and parallel computation (`parallel`, `foreach` packages) [HTML](session2.html)
+- **session 3**: Interfacing R with higher-performance languages, specifically introduction to Rcpp (`Rcpp`: touch on `RcppEigen`, `RcppArmadillo`). [HTML](session3.html)
 - **extra/other**
    - tips for numerical minimization (`optim`, `nloptr` etc.)
    - tools for data processing (tidyverse, `data.table`, ...)

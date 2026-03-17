@@ -1,7 +1,7 @@
 ---
-title: "compstatsR session 3:<br>C++ and Rcpp"
+title: "compstatsR:<br>C++ and Rcpp"
 author: "Ben Bolker"
-date: "08 November 2016"
+date: "19 March 2026"
 bibliography: compstatsR.bib
 output:
    ioslides_presentation
@@ -72,7 +72,9 @@ insert_fun <- function(name) {
     read_chunk(lines = capture.output(dump(name, '')),
                labels = paste(name, 'source', sep = '-'))
 }
+library(ggplot2); theme_set(theme_minimal())
 ```
+
 # When to use C++ 
 
 ## Don't (from [Rich Fitzjohn][1])
@@ -91,7 +93,7 @@ insert_fun <- function(name) {
 - optimize and profile
 - use existing library code
 - check algorithms  
-(RF: "Using C will not magically make a bad algorithm faster")
+(FitzJohn: "Using C will not magically make a bad algorithm faster")
 
 ## Why *should* you?
 
@@ -112,13 +114,12 @@ insert_fun <- function(name) {
 C++ is:
 
 - older
-- [much more widely used][2]
+- [much more widely used](https://www.tiobe.com/tiobe-index/)  
+(in 2026: #3 after Python and C, R is #9)
 - lower-level ("close to the metal")
 - strongly object-oriented ...
 - superset of (simpler) C
-- compiled vs. interpreted
-
-[2]: http://spectrum.ieee.org/computing/software/the-2016-top-programming-languages "top programming languages"
+- compiled rather than interpreted
 
 ## C++ differences from R
 
@@ -129,10 +130,9 @@ C++ is:
     - variable declaration
 	- scalars and vectors are different
 
+## example (@wickham_advanced_2019) {.columns-2}
 
-## example (modified from HW) {.columns-2}
-
-```{r rcpp1,message=FALSE,cache=TRUE}
+```{r rcpp1, message=FALSE}
 library(Rcpp)
 cppFunction(
  'int subtract(int x, int y) {
@@ -154,6 +154,26 @@ all integer *scalars*)
 ## Switch to *Advanced R* examples
 
 ([here](http://adv-r.had.co.nz/Rcpp.html#rcpp-intro))
+
+## Style note: early returns [@bryanCode2018] {.columns-2}
+
+```{r switch1, eval=FALSE}
+if (x>0) {
+  1
+} else if (x==0) {
+  0
+} else {
+  -1
+}
+```
+
+vs.
+
+```{r switch2, eval=FALSE}
+if (x>0) return(1)
+if (x==0) return(0)
+return(-1)
+```
 
 ## Summary
 
@@ -190,6 +210,7 @@ using namespace Rcpp;
 ## Output from Rcpp
 
 - essential for debugging!
+- (source-level debugging of C++-in-R is [clunky](https://dirk.eddelbuettel.com/papers/rcpp_uzuerich_2015_part5_packaging.pdf))
 - use either `Rprintf` (R-style) or `Rcout` (C++-style) printing:
 
 ```{r print,cache=TRUE}
@@ -217,7 +238,42 @@ y |x & \sim \textrm{Normal}\left(\frac{1}{1+x},\frac{1}{2(1+x)}\right)
 \end{split}
 $$
 
-([back to *Advanced R*](http://adv-r.had.co.nz/Rcpp.html#rcpp-case-studies))
+## Rcpp code
+
+(via [Dirk Eddelbuettel](https://dirk.eddelbuettel.com/blog/2011/07/14/#rcpp_gibbs_example), + some ChatGPT)
+
+```{r gibbs}
+cppFunction("
+  NumericMatrix gibbs(int n, int thin) {
+  double x=0, y=0;
+  NumericMatrix mat(n, 2);
+  colnames(mat) = CharacterVector::create('x', 'y');
+  for (int i=0; i<n; i++) {
+    for (int j=0; j<thin; j++) {
+      x = ::Rf_rgamma(3.0, 1.0/(y*y+4));
+      y = ::Rf_rnorm(1.0/(x+1),1.0/sqrt(2*x+2));
+    }
+    mat(i,0) = x;
+    mat(i,1) = y;
+  }
+  return mat;
+}
+")
+```
+
+## run it
+
+```{r gibbs_run}
+system.time(gibbs_res <- gibbs(n = 5e4*10, thin = 10))
+```
+
+## plot
+
+```{r gibbsplot, cache = TRUE}
+ggplot(gibbs_res, aes(x,y)) +
+  ggrastr::rasterise(geom_point(pch = ".", alpha = 0.4)) +
+  geom_density2d(colour = "red")
+```
 
 ## Sugar
 
@@ -226,6 +282,7 @@ $$
 >  If there’s a sugar version of the function you’re interested in, you should use it: it’ll be both expressive and well tested. Sugar functions aren’t always faster than a handwritten equivalent, but they will get faster in the future as more time is spent on optimising Rcpp. ([AdvR](http://adv-r.had.co.nz/Rcpp.html#rcpp-case-studies#sugar))
 
 - automatic vectorized arithmetic, logical comparisons, math functions, probability distributions ...
+- (**but** note that vectorization here is for readability, not speed)
 
 ## Sugar example
 
@@ -260,6 +317,7 @@ matMult(matrix(1:4,2),matrix(1:4,2))
 - automatic conversion from R matrix $\leftrightarrow$ `NumericMatrix` $\leftrightarrow$ `arma::mat` (elsewhere may need `as<arma::mat>` to convert)
 - `.fill` to initialize matrices
 - syntax generally MATLAB-like (!!): [table](http://arma.sourceforge.net/docs.html#syntax)
+- eigenvalues/vectors; decompositions (Cholesky, QR, SVD, etc.); sparse matrices; ...
 
 ## Resources
 
@@ -272,6 +330,15 @@ matMult(matrix(1:4,2),matrix(1:4,2))
 - [another basic intro to RcppArmadillo](http://q-aps.princeton.edu/sites/default/files/q-aps/files/slides_day4_am.pdf)
 
 <!-- http://stackoverflow.com/questions/10474107/fast-bounding-of-data-in-r/10475036#10475036 -->
+
+## Source
+
+https://bbolker.github.io/compstatsR
+
+```{r qrcode, echo = FALSE}
+library("qrcode")
+plot(qr_code("https://github.com/bbolker/compstatsR"))
+```
 
 ## References {.refs}
 
