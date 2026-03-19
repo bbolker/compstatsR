@@ -210,7 +210,7 @@ using namespace Rcpp;
 ## Output from Rcpp
 
 - essential for debugging!
-- (source-level debugging of C++-in-R is [clunky](https://dirk.eddelbuettel.com/papers/rcpp_uzuerich_2015_part5_packaging.pdf))
+- (source-level debugging of C++-in-R is [clunky](https://dirk.eddelbuettel.com/papers/rcpp_uzuerich_2015_part5_packaging.pdf)); see also [here](https://blog.davisvaughan.com/posts/2019-04-05-debug-r-package-with-cpp/), [here](https://contributions.bioconductor.org/debugging-cc-code.html), or [here](https://blog.davisvaughan.com/posts/2022-03-11-using-vs-code-to-debug-r-packages-with-c-code/)
 - use either `Rprintf` (R-style) or `Rcout` (C++-style) printing:
 
 ```{r print,cache=TRUE}
@@ -266,6 +266,8 @@ cppFunction("
 ```{r gibbs_run}
 system.time(gibbs_res <- gibbs(n = 5e4*10, thin = 10))
 ```
+
+$\approx$ 24 times faster than pure R ([code](https://github.com/bbolker/compstatsR/blob/master/gibbs_bench.R))
 
 ## plot
 

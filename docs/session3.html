@@ -3429,7 +3429,7 @@ using namespace Rcpp;
 
 <ul>
 <li>essential for debugging!</li>
-<li>(source-level debugging of C++-in-R is <a href='https://dirk.eddelbuettel.com/papers/rcpp_uzuerich_2015_part5_packaging.pdf' title=''>clunky</a>)</li>
+<li>(source-level debugging of C++-in-R is <a href='https://dirk.eddelbuettel.com/papers/rcpp_uzuerich_2015_part5_packaging.pdf' title=''>clunky</a>); see also <a href='https://blog.davisvaughan.com/posts/2019-04-05-debug-r-package-with-cpp/' title=''>here</a>, <a href='https://contributions.bioconductor.org/debugging-cc-code.html' title=''>here</a>, or <a href='https://blog.davisvaughan.com/posts/2022-03-11-using-vs-code-to-debug-r-packages-with-c-code/' title=''>here</a></li>
 <li>use either <code>Rprintf</code> (R-style) or <code>Rcout</code> (C++-style) printing:</li>
 </ul>
 
@@ -3490,7 +3490,9 @@ y |x &amp; \sim \textrm{Normal}\left(\frac{1}{1+x},\frac{1}{2(1+x)}\right)
 <pre class = 'prettyprint lang-r'>system.time(gibbs_res &lt;- gibbs(n = 5e4*10, thin = 10))</pre>
 
 <pre >##    user  system elapsed 
-##   0.592   0.001   0.593</pre>
+##   0.549   0.004   0.553</pre>
+
+<p>\(\approx\) 24 times faster than pure R (<a href='https://github.com/bbolker/compstatsR/blob/master/gibbs_bench.R' title=''>code</a>)</p>
 
 </article></slide><slide class=""><hgroup><h2>plot</h2></hgroup><article  id="plot">
 
